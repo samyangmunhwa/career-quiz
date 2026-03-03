@@ -32,3 +32,19 @@ body {
 input {
   color: #111827 !important;
 }
+/* 모바일 글자색 개선 */
+h1, h2, h3, p, label, span {
+  color: #111827 !important;
+}
+
+input {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  opacity: 1 !important;
+}
+
+::placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
