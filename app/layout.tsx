@@ -28,7 +28,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
                 {children}
-<footer style={{ textAlign: 'center', padding: '20px', fontSize: '15px', color: 'rgba(255,255,255,0.7)', position: 'fixed', bottom: 0, width: '100%', fontWeight: '500' }}>
+<footer style={{ 
+  textAlign: 'center', 
+  padding: '16px', 
+  fontSize: '14px', 
+  color: 'rgba(255,255,255,0.7)', 
+  width: '100%', 
+  fontWeight: '500',
+  background: 'transparent'
+}}>
   © 2026 교육 콘텐츠 전문기업 (주)삼양문화. All rights reserved.
 </footer>
       </body>
