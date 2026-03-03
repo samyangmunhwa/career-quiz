@@ -7,14 +7,13 @@ export default function CompletePage() {
   const router = useRouter();
   const [certData, setCertData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [nickname, setNickname] = useState('');
-  const printRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+  const certRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('session_token');
     const nick = localStorage.getItem('nickname');
     if (!token) { router.push('/'); return; }
-    setNickname(nick || '');
     fetch(`/api/certificate?token=${token}`)
       .then(r => r.json())
       .then(data => {
@@ -23,13 +22,32 @@ export default function CompletePage() {
       });
   }, []);
 
-  function handlePrint() {
-    window.print();
+  async function handleDownloadPDF() {
+    if (!certRef.current) return;
+    setDownloading(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).jsPDF;
+      const canvas = await html2canvas(certRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 20, pdfWidth, pdfHeight);
+      pdf.save(`직업탐색챌린지_인증서_${certData?.nickname || ''}.pdf`);
+    } catch (e) {
+      console.error(e);
+    }
+    setDownloading(false);
   }
 
   const completedDate = certData?.completed_at
     ? new Date(certData.completed_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
-    : '';
+    : new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
   if (loading) {
     return (
@@ -42,7 +60,7 @@ export default function CompletePage() {
     <main style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
       {/* 인증서 */}
-      <div ref={printRef} style={{ background: 'white', borderRadius: '20px', padding: '48px 40px', width: '100%', maxWidth: '500px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center', border: '8px solid #667eea', position: 'relative' }}>
+      <div ref={certRef} id="cert-area" style={{ background: 'white', borderRadius: '20px', padding: '48px 40px', width: '100%', maxWidth: '500px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center', border: '8px solid #667eea' }}>
 
         <div style={{ fontSize: '48px', marginBottom: '8px' }}>🎓</div>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '4px' }}>직업 탐색 챌린지</h1>
@@ -64,35 +82,46 @@ export default function CompletePage() {
         <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>완료일</p>
         <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#374151', marginBottom: '24px' }}>{completedDate}</p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ background: '#f3f4f6', borderRadius: '12px', padding: '12px 20px' }}>
-            <p style={{ fontSize: '12px', color: '#6b7280' }}>탐색한 직업 수</p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ background: '#f3f4f6', borderRadius: '12px', padding: '12px 24px' }}>
+            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>탐색한 직업 수</p>
             <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>100개 🏆</p>
           </div>
         </div>
+
+        <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '24px' }}>
+          교육 콘텐츠 전문기업 (주)삼양문화
+        </p>
       </div>
 
       {/* 버튼 영역 */}
       <div style={{ width: '100%', maxWidth: '500px', marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <button
-          onClick={handlePrint}
+          onClick={handleDownloadPDF}
+          disabled={downloading}
           style={{ width: '100%', padding: '16px', background: 'white', color: '#667eea', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
         >
-          🖨️ 인증서 인쇄 / PDF 저장
+          {downloading ? '📄 PDF 생성 중...' : '📄 PDF 다운로드'}
+        </button>
+        <button
+          onClick={() => window.print()}
+          style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
+        >
+          🖨️ 인쇄하기
         </button>
         <button
           onClick={() => router.push('/ranking')}
-          style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
+          style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '12px', fontSize: '16px', cursor: 'pointer' }}
         >
           🏆 학급 랭킹 보기
         </button>
       </div>
-
       <style>{`
         @media print {
-          body * { visibility: hidden; }
-          .print-area, .print-area * { visibility: visible; }
-          .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          body * { visibility: hidden !important; }
+          #cert-area, #cert-area * { visibility: visible !important; }
+          #cert-area { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 500px; }
+          button { display: none !important; }
         }
       `}</style>
     </main>
