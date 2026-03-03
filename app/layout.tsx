@@ -37,7 +37,7 @@ export default function RootLayout({
   fontWeight: '500',
   background: 'transparent'
 }}>
-  © 2026 교육 콘텐츠 전문기업 (주)삼양문화. All rights reserved.
+  © 2026 교육 콘텐츠 전문기업 (주)삼양문화.<br /> All rights reserved.
 </footer>
       </body>
     </html>
