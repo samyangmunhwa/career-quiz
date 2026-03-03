@@ -137,9 +137,16 @@ export default function ChallengePage() {
           </span>
         </div>
 
-        <p style={{ fontSize: '18px', color: '#374151', marginBottom: '24px', lineHeight: '1.6' }}>
-          💡 {job.one_liner}
-        </p>
+<p style={{ 
+  fontSize: '16px', 
+  color: '#374151', 
+  marginBottom: '20px', 
+  lineHeight: '1.7', 
+  wordBreak: 'keep-all',
+  whiteSpace: 'pre-wrap'
+}}>
+  💡 {job.one_liner}
+</p>
 
         <div style={{
           background: '#f3f4f6', borderRadius: '12px', padding: '16px',
