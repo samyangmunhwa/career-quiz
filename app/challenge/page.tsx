@@ -203,6 +203,12 @@ export default function ChallengePage() {
             fontSize: '14px', cursor: 'pointer', marginTop: '8px'
           }}
         >모르겠어요, 다음 직업 →</button>
+        <button
+  onClick={() => router.push('/ranking')}
+  style={{ width: '100%', padding: '10px', background: 'transparent', color: '#9ca3af', border: 'none', borderRadius: '10px', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}
+>
+  🏆 학급 랭킹 보기
+</button>
       </div>
     </main>
   );
