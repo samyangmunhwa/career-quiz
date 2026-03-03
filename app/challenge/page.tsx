@@ -147,6 +147,7 @@ export default function ChallengePage() {
         }}>
           <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>초성 힌트</p>
           <p style={{ fontSize: '32px', fontWeight: 'bold', letterSpacing: '8px', color: '#1f2937' }}>
+            {job.initials}
           </p>
         </div>
 
