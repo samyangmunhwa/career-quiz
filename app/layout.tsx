@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,21 +24,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-                {children}
-<footer style={{ 
-  textAlign: 'center', 
-  padding: '16px', 
-  fontSize: '14px', 
-  color: 'rgba(255,255,255,0.7)', 
-  width: '100%', 
-  fontWeight: '500',
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-}}>
-  © 2026 교육 콘텐�??�문기업 (�??�양문화.<br /> All rights reserved.
-</footer>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {children}
+        <footer style={{ 
+          textAlign: 'center', 
+          padding: '20px 16px', 
+          fontSize: '14px', 
+          color: 'rgba(255,255,255,0.85)', 
+          width: '100%', 
+          fontWeight: '500',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        }}>
+          © 2026 교육 콘텐츠 전문기업 (주)삼양문화.<br /> All rights reserved.
+        </footer>
       </body>
     </html>
   );
