@@ -35,9 +35,9 @@ export default function RootLayout({
   color: 'rgba(255,255,255,0.7)', 
   width: '100%', 
   fontWeight: '500',
-  background: 'transparent'
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
 }}>
-  © 2026 교육 콘텐츠 전문기업 (주)삼양문화.<br /> All rights reserved.
+  © 2026 교육 콘텐�??�문기업 (�??�양문화.<br /> All rights reserved.
 </footer>
       </body>
     </html>
