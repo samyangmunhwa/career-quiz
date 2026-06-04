@@ -26,15 +26,41 @@ export default function AdminPage() {
 
   async function handleLogin() {
     if (!schoolCode.trim()) { setError('학교 코드를 입력하세요'); return; }
-    if (password !== 'admin1234') { setError('관리자 비밀번호가 틀렸습니다'); return; }
+    if (!password.trim()) { setError('관리자 비밀번호를 입력하세요'); return; }
     setLoading(true);
     setError('');
-    const res = await fetch(`/api/admin?school_code=${schoolCode}`);
+
+    // 1) 비밀번호를 서버에서 검증 → 세션 쿠키 발급
+    const loginRes = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (!loginRes.ok) {
+      const j = await loginRes.json().catch(() => ({}));
+      setError(j.error || '로그인에 실패했습니다');
+      setLoading(false);
+      return;
+    }
+
+    // 2) 세션 쿠키를 바탕으로 학생 현황 조회
+    const res = await fetch(`/api/admin?school_code=${encodeURIComponent(schoolCode)}`);
     const json = await res.json();
-    if (json.error) { setError(json.error); setLoading(false); return; }
+    if (!res.ok || json.error) {
+      setError(json.error || '조회에 실패했습니다');
+      setLoading(false);
+      return;
+    }
     setData(json.classes || []);
     setLoggedIn(true);
     setLoading(false);
+  }
+
+  async function handleLogout() {
+    await fetch('/api/admin/login', { method: 'DELETE' });
+    setLoggedIn(false);
+    setPassword('');
+    setData([]);
   }
 
   if (!loggedIn) {
@@ -121,7 +147,7 @@ export default function AdminPage() {
         ))}
 
         <button
-          onClick={() => setLoggedIn(false)}
+          onClick={handleLogout}
           style={{ width: '100%', padding: '14px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', borderRadius: '12px', fontSize: '16px', cursor: 'pointer', marginTop: '8px' }}
         >
           로그아웃
