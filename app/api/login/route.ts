@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { createServerClient } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
@@ -42,9 +43,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ student: existing });
   }
 
+  // 🔒 추측 불가능한 세션 토큰을 서버에서 직접 생성 (DB 기본값에 의존하지 않음)
   const { data: student, error } = await supabase
     .from('students')
-    .insert({ class_id: cls.id, nickname })
+    .insert({ class_id: cls.id, nickname, session_token: randomUUID() })
     .select('id, session_token, explored_count, is_completed')
     .single();
 
