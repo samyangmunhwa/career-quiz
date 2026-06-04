@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface School {
   id: string;
@@ -35,13 +35,27 @@ export default function SuperAdminPage() {
     setSchools(data.schools || []);
   }
 
-  function handleLogin() {
-    if (password === 'samyang2026!') {
-      setLoggedIn(true);
-      fetchSchools();
-    } else {
-      setError('비밀번호가 틀렸습니다');
+  async function handleLogin() {
+    setError('');
+    // 비밀번호를 서버에서 검증 → 세션 쿠키 발급
+    const res = await fetch('/api/superadmin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setError(j.error || '비밀번호가 틀렸습니다');
+      return;
     }
+    setLoggedIn(true);
+    fetchSchools();
+  }
+
+  async function handleLogout() {
+    await fetch('/api/superadmin/login', { method: 'DELETE' });
+    setLoggedIn(false);
+    setPassword('');
   }
 
   async function addSchool() {
@@ -218,7 +232,7 @@ export default function SuperAdminPage() {
         ))}
 
         <button
-          onClick={() => setLoggedIn(false)}
+          onClick={handleLogout}
           style={{ width: '100%', padding: '14px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '12px', fontSize: '15px', cursor: 'pointer', marginTop: '8px' }}
         >
           로그아웃
