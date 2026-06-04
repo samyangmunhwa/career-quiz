@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isAuthed } from '@/lib/auth';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,6 +8,11 @@ const supabase = createClient(
 );
 
 export async function GET(req: NextRequest) {
+  // 🔒 서버에서 세션 검증 (쿠키 없으면 데이터 안 줌)
+  if (!(await isAuthed('admin'))) {
+    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const school_code = searchParams.get('school_code');
 
