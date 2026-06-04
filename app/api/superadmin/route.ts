@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isAuthed } from '@/lib/auth';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,6 +8,11 @@ const supabase = createClient(
 );
 
 export async function GET(req: NextRequest) {
+  // 🔒 슈퍼관리자 세션 필수
+  if (!(await isAuthed('super'))) {
+    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const action = searchParams.get('action');
 
@@ -32,6 +38,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // 🔒 학교/학급 추가·삭제는 반드시 슈퍼관리자만
+  if (!(await isAuthed('super'))) {
+    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
+  }
+
   const body = await req.json();
   const { action } = body;
 
